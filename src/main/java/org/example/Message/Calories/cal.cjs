@@ -1,37 +1,53 @@
 const fetch = require("node-fetch");
-
+const net = require('node:net');
 //************** retrieving data from java **************//
 
-let javaPort = 8080;
-let javaServer = require('net').createServer();
-let WebSocketServer = require('ws').Server
-    , wss = new WebSocketServer({port: 90});
 
-var fileData;
+//let client = new net.createConnection(8080, "localhost");
 
-javaServer.on('connection', function (javaSocket) {
-    var clientAddress = javaSocket.address().address + ':' + javaSocket.address().port;
-    console.log('Java ' + clientAddress + ' connected');
+//server.listen(8080, "localhost");
+//client.setEncoding('utf8');
 
-    var firstDataListenner = function (data) {
-        fileData = data;
-        console.log('Received namespace from java End: ' + data);
-        //javaServer.send(data);
-        //javaSocket.removeListener('data', firstDataListenner);
-    }
-
-    javaSocket.on('data', firstDataListenner);
-
-    javaSocket.on('close', function() {
-        console.log('Java ' + clientAddress + ' disconnected');
-    });
-});
-javaServer.listen(javaPort);
 
 //************** sending data back to java **************//
-let query = fileData;
+let query;
+// server gets its port automatically
+// server //
+
+const server = net.createServer((socket) => {
+    socket.on('data', (data) => {
+        query = data;
+    });
+}).on('error', (err) => {
+    console.error(err);
+});
+
+server.listen(8081, "localhost");
+console.log("listening")
+
+// client //
+
+var config = {
+    host: 'localhost',
+    port: 4040
+};
+
+var client = new net.Socket();
+
+//client.setTimeout(5000)
+
+client.connect({
+    host: config.host,
+    port: config.port
+}, function () {
+    client.write(
+        getData().then(data =>
+            console.log(data.foods[0].foodNutrients[3].value)).toString()
+    );
+});
+
 //query = "cheddar cheese"
-const params = {
+let params = {
     api_key: '3wHHCaKsjWzJjm5tgmicgXB6qq592joghgbMcvyO',
     query: query,
     dataType: ["Survey (FNDDS)"],
@@ -46,5 +62,5 @@ function getData() {
         .then(response => response.json())
 }
 
-getData().then(data =>
-   console.log(data.foods[0].foodNutrients[3].value))
+//getData().then(data =>
+//   console.log(data.foods[0].foodNutrients[3].value))
