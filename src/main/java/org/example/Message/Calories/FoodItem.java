@@ -106,17 +106,35 @@ public class FoodItem extends ListOfFood {
     }
 
     // переименовать, переделать try catch в throws
-    public Integer getCalculatedCalories() {
-        ProcessBuilder pb = new ProcessBuilder("node", System.getProperty("user.dir") + "\\src\\main\\java\\org\\example\\Message\\Calories\\cal.cjs");
+    public Integer runJSServer() {
+
+        ProcessBuilder pb = new ProcessBuilder("node", System.getProperty("user.dir") + "\\src\\main\\java\\org\\example\\Message\\Calories\\receive.cjs");
         try {
             Process p = pb.start();
-            Scanner s = new Scanner(p.getInputStream());
-            String result = s.hasNext() ? s.next() : "";
+            System.out.println("is alive: " + p.isAlive());
+//            Scanner s = new Scanner(p.getInputStream());
+//            String result = s.hasNext() ? s.next() : "";
 //            System.out.println("result: " + result);
-            return Integer.parseInt(result);
+//            return Integer.parseInt(result);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return 0;
     }
+
+//    public Integer getCalories() {
+//
+//        ProcessBuilder pb = new ProcessBuilder("node", System.getProperty("user.dir") + "\\src\\main\\java\\org\\example\\Message\\Calories\\cal.cjs");
+//        try {
+//            Process p = pb.start();
+//            System.out.println("is alive: " + p.isAlive());
+////            Scanner s = new Scanner(p.getInputStream());
+////            String result = s.hasNext() ? s.next() : "";
+////            System.out.println("result: " + result);
+////            return Integer.parseInt(result);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return 0;
+//    }
 }

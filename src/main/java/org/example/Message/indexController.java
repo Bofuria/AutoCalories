@@ -18,9 +18,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
-import static org.example.Message.Calories.ManageFoodItem.prepareRequest;
-import static org.example.Message.Calories.ManageFoodItem.updateMealCount;
 import org.example.Message.Calories.FoodItem.*;
+
+import static org.example.Message.Calories.ManageFoodItem.*;
+
 @Controller
 public class indexController {
 
@@ -40,9 +41,12 @@ public class indexController {
 
         foodItem.setTime(LocalTime.now(ZoneId.of("Europe/Paris")).toString());
 
-        prepareRequest(foodItem.getName());
+        //prepareRequest(foodItem.getName());
 
-        foodItem.setCaloriesValue(foodItem.getCalculatedCalories());
+        foodItem.runJSServer(); // runs receive.cjs
+        sendName(foodItem.getName()); // java client sends name to receive.cjs
+        foodItem.setCaloriesValue(getValue()); // java server receive calories from cal.cjs
+
 
         dao.save(updateMealCount(dao, foodItem));
         return "index";
