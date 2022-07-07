@@ -1,0 +1,16 @@
+
+.search-item {
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+}
+
+div.search-item:hover {
+    transform: scale(1.05);
+    transition: 0.5s ease-in-out;
+}
+
+input[type='submit'] {
+    color: black;
+    font-size: 1.2rem;
+}
+

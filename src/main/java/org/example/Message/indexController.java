@@ -41,13 +41,8 @@ public class indexController {
 
         foodItem.setTime(LocalTime.now(ZoneId.of("Europe/Paris")).toString());
 
-        //prepareRequest(foodItem.getName());
-
-        foodItem.runJSServer(); // runs receive.cjs
-        sendName(foodItem.getName()); // java client sends name to receive.cjs
-        foodItem.setCaloriesValue(getValue()); // java server receive calories from cal.cjs
-
-
+        foodItem.setCaloriesValue(serverReceive(foodItem));
+        
         dao.save(updateMealCount(dao, foodItem));
         return "index";
     }

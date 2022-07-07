@@ -1,19 +1,19 @@
 package org.example.Message.Calories;
 
 import org.example.Message.dao.Dao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 @Component
 public class ManageFoodItem extends FoodItem {
+
     static DayTrack dayTrack = new DayTrack();
     static Socket clientSoc;
+    static ServerSocket ss;
+
     public static FoodItem updateMealCount(Dao dao, FoodItem foodItem) {
         if(dayTrack.dayChanged(foodItem)) {
             foodItem.setMealCount(1);
@@ -30,77 +30,69 @@ public class ManageFoodItem extends FoodItem {
         return foodItem;
     }
 
-    public static void sendName(String message) throws IOException, InterruptedException {
+    public static void runJSServer() {
+        ProcessBuilder pb = new ProcessBuilder("node", System.getProperty("user.dir") + "\\src\\main\\java\\org\\example\\Message\\Calories\\receive.cjs");
+        try {
+            Process p = pb.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void clientSend(String message) throws IOException, InterruptedException {
         //
         // java client ---> js server
         //
-
         clientSoc = new Socket("localhost",2020);
 
         DataOutputStream d = new DataOutputStream(
                 clientSoc.getOutputStream());
 
-        // message to display
         d.writeUTF(message);
 
         d.flush();
 
-        // closing DataOutputStream
         d.close();
 
-        // closing socket
         clientSoc.close();
 
-
-        // 2
-//        PrintWriter pr = new PrintWriter(nodejs.getOutputStream());
-//        pr.println(message);
-//        pr.flush();
-//
-//        InputStreamReader in = new InputStreamReader(nodejs.getInputStream());
-//        BufferedReader bf = new BufferedReader(in);
-//
-//        String result = bf.readLine();
-
-        // 1
-        //nodejs.getOutputStream().write(message.getBytes(StandardCharsets.UTF_8));
-        //nodejs.getOutputStream().flush();
     }
 
-    public static Integer getValue() throws IOException {
-
+    public static Integer serverReceive(FoodItem foodItem) throws IOException, InterruptedException {
         //
         // java server <--- js client
         //
+        ss = new ServerSocket(4040);
 
-        ServerSocket ss = new ServerSocket(4040);
+        runJSServer();
+        Thread.sleep(1000);
+        clientSend(foodItem.getName());
+        Thread.sleep(3000);
+        Socket socket = ss.accept();
 
+        InputStream in = socket.getInputStream();
+        // System.out.println("stream: " + in.available());
 
-        ProcessBuilder pb = new ProcessBuilder("node",
-                System.getProperty("user.dir") + "\\src\\main\\java\\org\\example\\Message\\Calories\\cal.cjs");
-        Process p = pb.start(); // asking cal.cjs to provide calories
-        System.out.println("is alive = " + p.isAlive());
-        // establishes connection
+        char digit;
+        StringBuilder result = new StringBuilder("");
 
-        Socket soc = ss.accept();
-        // invoking input stream
-        DataInputStream dis
-                = new DataInputStream(soc.getInputStream());
-        System.out.println("dis: " + dis.readUTF());
+        while(in.available() != 0) {
+            digit = (char) in.read();
+            result.append(digit);
+        }
 
+        // System.out.println("result: " + result);
 
-        // System.out.println("is alive: " + p.isAlive());
-
-        //soc.setSoTimeout(5000);
-        //String test;
-        //test = String.valueOf(dis.read());
-        int result;
-        result = dis.readInt();
-
-        System.out.println("result= " + result);
-
-        // closing socket
+        in.close();
+        socket.close();
         ss.close();
-        return result;
+
+        if(result.isEmpty() && !String.valueOf(result).equals("error")) {
+            serverReceive(foodItem);
+        }
+
+        // add wrong input handling
+
+        return Integer.valueOf(String.valueOf(result));
     }
 }

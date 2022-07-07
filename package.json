@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tarekraafat/autocomplete.js": "^10.2.7",
+    "jsonfile": "^6.1.0",
     "node-fetch": "^2.6.7",
     "ws": "^8.8.0"
   },
