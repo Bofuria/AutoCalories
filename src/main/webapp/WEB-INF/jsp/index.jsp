@@ -19,23 +19,27 @@
                 </h3>
             </div>
             <div class="form-group">
-                <form action="addFoodItem">
+                <form action="addFoodItem" onsubmit="return validateForm()">
                     <label class="label form-label fs-4 fst-italic">Name</label>
                     <input type="text" name="name" id="search" class="form-control from-control-lg" placeholder="Enter food name..."><br>
                     <label class="label form-label fs-4 fst-italic">Weight</label>
-                    <input type="text" name="weight" class="form-control from-control-lg" placeholder="Enter food weight..."><br>
-                    <input type="submit" class="btn btn-light btn-outline-secondary"><br>
+                    <input type="number" name="weight" class="form-control from-control-lg" placeholder="Enter food weight..."  required><br>
+                    <input value="Send" type="submit" class="btn btn-light btn-outline-secondary">
+                    <a href="/history"><input value="Statistics" id="stats" type="button" class="btn btn-light btn-outline-secondary"></a>
                 </form>
-                <p id="error"></p>
+
                 <!-- <form action="getFoodItem">
                     <label>id</label>
                     <input type="text" name="id"><br>
                     <input type="submit"><br>
                 </form> -->
             </div>
-            <div id="match-list"></div>
+            <div class="mt-3" id="match-list"></div>
         </div>
     </div>
 </body>
+<script src="<spring:url value="/resources/js/list_of_food.js" />" defer="defer"></script>
 <script src="<spring:url value="/resources/js/main.js" />" defer="defer"></script>
+<script src="<spring:url value="/resources/js/validation.js" />" defer="defer"></script>
+
 </html>

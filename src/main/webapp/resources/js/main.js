@@ -1,14 +1,17 @@
+
 const search = document.getElementById("search")
 const matchList = document.getElementById("match-list")
 
-const searchStates = async searchText => {
-    const res = await fetch('resources/js/list.json')
-    const states = await res.json()
+// let foodList;
+// search helper
 
-    //console.log(states);
-    let matches = states.filter(state => {
+const searchFoods = async searchText => {
+    const res = await fetch('resources/js/list.json')
+    const foods = await res.json()
+
+    let matches = foods.filter(food => {
         const regex = new RegExp(`^${searchText}`, 'gi')
-        return state.match(regex)
+        return food.match(regex)
     })
 
     if(searchText.length === 0) {
@@ -31,13 +34,15 @@ const outputHtml = matches => {
         matchList.innerHTML = html;
     }
 }
-search.addEventListener("input", () => searchStates(search.value))
+
+// filling input field with clicked food
+
+search.addEventListener("input", () => searchFoods(search.value))
 
 document.body.addEventListener( 'click', function ( event ) {
     if( event.target.classList.contains('search-item') ) {
         document.getElementById('search').value = event.target.innerText
     }
 } );
-
 
 

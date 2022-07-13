@@ -1,7 +1,13 @@
-
+* {
+    box-sizing: border-box;
+}
 .search-item {
     cursor: pointer;
     transition: 0.5s ease-in-out;
+}
+
+.container {
+    text-align: center;
 }
 
 div.search-item:hover {
@@ -9,8 +15,27 @@ div.search-item:hover {
     transition: 0.5s ease-in-out;
 }
 
-input[type='submit'] {
-    color: black;
-    font-size: 1.2rem;
+form {
+    position: relative;
 }
 
+input[type='submit'],
+input[id='stats'],
+input[id='update-btn']  {
+    color: black !important;
+    font-size: 1.2rem !important;
+    width: 200px;
+    display: block !important;
+}
+
+#stats {
+    position: absolute;
+    float: right;
+    right: 0px;
+    top: 210px;
+}
+
+#table-header {
+    display: inline-block;
+    text-align: center;
+}

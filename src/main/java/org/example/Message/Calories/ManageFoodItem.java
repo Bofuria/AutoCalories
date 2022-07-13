@@ -9,15 +9,13 @@ import java.net.Socket;
 
 @Component
 public class ManageFoodItem extends FoodItem {
-
-    static DayTrack dayTrack = new DayTrack();
     static Socket clientSoc;
     static ServerSocket ss;
 
-    public static FoodItem updateMealCount(Dao dao, FoodItem foodItem) {
-        if(dayTrack.dayChanged(foodItem)) {
+    public static FoodItem updateMealCount(Dao dao, FoodItem foodItem) throws IOException {
+        if(dayChanged(dao, foodItem)) {
             foodItem.setMealCount(1);
-            dayTrack = new DayTrack();
+            foodItem.setDayCaloriesValue(foodItem.getCaloriesValue());
         } else {
             Integer temp = dao.findByMealCount();
             if(temp != null) {
@@ -87,12 +85,25 @@ public class ManageFoodItem extends FoodItem {
         socket.close();
         ss.close();
 
-        if(result.isEmpty() && !String.valueOf(result).equals("error")) {
+        if(result.isEmpty()) {
             serverReceive(foodItem);
         }
 
-        // add wrong input handling
+        int absoluteCaloriesValue = Integer.parseInt(String.valueOf(result));
+        return calculatedCaloriesValue(foodItem, absoluteCaloriesValue);
+    }
 
-        return Integer.valueOf(String.valueOf(result));
+    public static int calculatedCaloriesValue(FoodItem foodItem, int absValue) {
+        return (foodItem.weight / 100) * absValue;
+    }
+
+    public static int calculatedDatCaloriesValue(FoodItem foodItem, Dao dao) {
+        int prevRecordCalories = dao.findCaloriesOfLastRecord();
+        System.out.println("Last calories: " + prevRecordCalories);
+        return prevRecordCalories + foodItem.caloriesValue;
+    }
+    public static boolean dayChanged(Dao dao, FoodItem foodItem) {
+        String prevRecord = dao.findDateOfLastRecord();
+        return !prevRecord.equals(foodItem.date);
     }
 }

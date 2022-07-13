@@ -1,25 +1,38 @@
 package org.example.Message.adiitionalInfo;
 
+import com.google.gson.Gson;
+import org.example.Message.Calories.FoodItem;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Component
 public class BuildChart {
-    String date;
-    int calories;
-    List<BuildChart> requiredCaloriesInfo;
 
-    public String getDate() {
-        return date;
-    }
+    public String prepareChartInfo(List<FoodItem> sqlDatSet) {
 
-    public void setDate(String date) {
-        this.date = date;
-    }
+        Gson gsonObj = new Gson();
+        Map<Object, Object> map = null;
+        List<Map<Object, Object>> list = new ArrayList<Map<Object, Object>>();
+        String dataPoints = null;
 
-    public int getCalories() {
-        return calories;
-    }
+        String xVal, yVal;
 
-    public void setCalories(int calories) {
-        this.calories = calories;
+        for (int i = 0; i < sqlDatSet.size(); i++) {
+            xVal = sqlDatSet.get(i).getDate();
+            yVal = String.valueOf(sqlDatSet.get(i).getDayCaloriesValue());
+
+            map = new HashMap<Object, Object>();
+            map.put("label", xVal);
+            map.put("y", Double.parseDouble(yVal));
+
+            list.add(map);
+
+            dataPoints = gsonObj.toJson(list);
+        }
+        return dataPoints;
     }
 }
